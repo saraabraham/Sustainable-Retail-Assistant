@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Cors;
 using RecommendationService.Models;
 using RecommendationService.Services;
 
@@ -7,7 +6,6 @@ namespace RecommendationService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[EnableCors("AllowAll")]
 public class NLPController : ControllerBase
 {
     private readonly INLPService _nlpService;

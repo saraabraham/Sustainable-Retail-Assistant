@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using RecommendationService;
+using RecommendationService.Data;
 using RecommendationService.Services;
 using RecommendationService.Repositories;
 using MongoDB.Driver;
@@ -13,17 +16,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-// Configure CORS - MUST be before other services
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll", policy =>
-    {
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
-    });
-});
 
 // MongoDB Configuration
 var mongoConnectionString = builder.Configuration["MongoDB:ConnectionString"] 
@@ -38,6 +30,13 @@ builder.Services.AddScoped(sp =>
     var client = sp.GetRequiredService<IMongoClient>();
     return client.GetDatabase(mongoDatabaseName);
 });
+
+// PostgreSQL Configuration
+var postgresConnection = builder.Configuration.GetConnectionString("PostgreSQL")
+    ?? "Host=localhost;Database=retail_assistant;Username=postgres;Password=password";
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(postgresConnection));
 
 // Azure Cognitive Services (optional)
 var azureEndpoint = builder.Configuration["Azure:CognitiveServices:Endpoint"];
@@ -54,11 +53,30 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IRecommendationEngine, RecommendationEngine>();
 builder.Services.AddScoped<INLPService, NLPService>();
 builder.Services.AddScoped<ISustainabilityCalculator, SustainabilityCalculator>();
+builder.Services.AddScoped<IUserInteractionRepository, UserInteractionRepository>();
 
 // Health checks
 builder.Services.AddHealthChecks();
 
 var app = builder.Build();
+
+// Apply database migrations
+using (var scope = app.Services.CreateScope())
+{
+    try
+    {
+        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        context.Database.EnsureCreated();
+        Console.WriteLine("✅ PostgreSQL database initialized");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"⚠️  PostgreSQL not available: {ex.Message}");
+    }
+}
+
+// *** CUSTOM CORS MIDDLEWARE - MUST BE FIRST ***
+app.UseMiddleware<CorsMiddleware>();
 
 // Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
@@ -67,8 +85,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// CORS must be called before Authorization and MapControllers
-app.UseCors("AllowAll");
 app.UseAuthorization();
 app.MapControllers();
 app.MapHealthChecks("/health");
@@ -77,12 +93,14 @@ app.MapHealthChecks("/health");
 using (var scope = app.Services.CreateScope())
 {
     var productRepo = scope.ServiceProvider.GetRequiredService<IProductRepository>();
-    await RecommendationService.SampleDataSeeder.SeedData(productRepo);
+    await SampleDataSeeder.SeedData(productRepo);
 }
 
 Console.WriteLine("✅ Backend is running!");
 Console.WriteLine("📍 API: http://localhost:5000");
 Console.WriteLine("📚 Swagger: http://localhost:5000/swagger");
-Console.WriteLine("🌐 CORS: Enabled for all origins");
+Console.WriteLine("🌐 CORS: Custom middleware enabled");
+Console.WriteLine("🗄️  MongoDB: Connected for products");
+Console.WriteLine("🐘 PostgreSQL: Connected for user data");
 
 app.Run();

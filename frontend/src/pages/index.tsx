@@ -3,13 +3,22 @@ import Head from 'next/head';
 import ChatInterface from '@/components/ChatInterface';
 import ProductCarousel from '@/components/ProductCarousel';
 import ComparisonMatrix from '@/components/ComparisonMatrix';
+import Cart from '@/components/Cart';
+import TCOModal from '@/components/TCOModal';
 import { Product, Recommendation, ProductFilters } from '@/types';
 import { Leaf, ShoppingBag } from 'lucide-react';
+
+interface CartItem {
+  product: Product;
+  quantity: number;
+}
 
 export default function Home() {
   const [recommendations, setRecommendations] = useState<Product[]>([]);
   const [comparisonProducts, setComparisonProducts] = useState<Product[]>([]);
   const [filters, setFilters] = useState<ProductFilters>({});
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [selectedProductForTCO, setSelectedProductForTCO] = useState<Product | null>(null);
 
   const handleRecommendationsReceived = (recs: Recommendation[]) => {
     const products = recs.map((r) => r.product);
@@ -23,12 +32,44 @@ export default function Home() {
     }
   };
 
+  const handleAddToCart = (product: Product) => {
+    const existingItem = cartItems.find(item => item.product.id === product.id);
+    
+    if (existingItem) {
+      setCartItems(cartItems.map(item =>
+        item.product.id === product.id
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      ));
+    } else {
+      setCartItems([...cartItems, { product, quantity: 1 }]);
+    }
+  };
+
+  const handleRemoveFromCart = (productId: string) => {
+    setCartItems(cartItems.filter(item => item.product.id !== productId));
+  };
+
+  const handleClearCart = () => {
+    if (confirm('Are you sure you want to clear your cart?')) {
+      setCartItems([]);
+    }
+  };
+
+  const handleCheckout = () => {
+    alert('Checkout functionality would be implemented here!');
+  };
+
   const handleRemoveFromComparison = (productId: string) => {
     setComparisonProducts(comparisonProducts.filter((p) => p.id !== productId));
   };
 
   const handleClearComparison = () => {
     setComparisonProducts([]);
+  };
+
+  const handleViewTCO = (product: Product) => {
+    setSelectedProductForTCO(product);
   };
 
   return (
@@ -61,15 +102,26 @@ export default function Home() {
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                  <ShoppingBag className="w-4 h-4" />
-                  <span className="hidden sm:inline">My Cart</span>
-                </button>
-              </div>
             </div>
           </div>
         </header>
+
+        {/* Cart Component */}
+        <Cart
+          items={cartItems}
+          onRemove={handleRemoveFromCart}
+          onClear={handleClearCart}
+          onCheckout={handleCheckout}
+        />
+
+        {/* TCO Modal */}
+        {selectedProductForTCO && (
+          <TCOModal
+            product={selectedProductForTCO}
+            isOpen={!!selectedProductForTCO}
+            onClose={() => setSelectedProductForTCO(null)}
+          />
+        )}
 
         {/* Main Content */}
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -96,9 +148,23 @@ export default function Home() {
                 products={recommendations}
                 filters={filters}
                 onFilterChange={setFilters}
-                onProductSelect={handleProductSelect}
+                onProductSelect={(product) => {
+                  handleProductSelect(product);
+                  handleAddToCart(product);
+                }}
                 title="Your Personalized Recommendations"
               />
+              
+              {/* Quick Actions for Products */}
+              <div className="mt-4 flex justify-center gap-4">
+                <button
+                  onClick={() => recommendations.length > 0 && handleViewTCO(recommendations[0])}
+                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  disabled={recommendations.length === 0}
+                >
+                  View TCO Calculator
+                </button>
+              </div>
             </div>
           )}
 

@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Cors;
 using RecommendationService.Models;
 using RecommendationService.Services;
 
@@ -7,7 +6,6 @@ namespace RecommendationService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[EnableCors("AllowAll")]
 public class RecommendationsController : ControllerBase
 {
     private readonly IRecommendationEngine _recommendationEngine;
@@ -35,10 +33,7 @@ public class RecommendationsController : ControllerBase
         {
             _logger.LogInformation("Processing recommendation request: {Query}", request.Query);
 
-            // Process query with NLP
             var intent = await _nlpService.ExtractIntent(request.Query);
-
-            // Get recommendations
             var recommendations = await _recommendationEngine.GetRecommendations(
                 request.Query,
                 intent,

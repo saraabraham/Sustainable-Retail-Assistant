@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Cors;
 using RecommendationService.Models;
 using RecommendationService.Repositories;
 
@@ -7,7 +6,6 @@ namespace RecommendationService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[EnableCors("AllowAll")]
 public class ProductsController : ControllerBase
 {
     private readonly IProductRepository _productRepository;
@@ -38,7 +36,6 @@ public class ProductsController : ControllerBase
                 PageNumber = searchParams.Page ?? 1
             });
 
-            // Apply sorting
             var sortedProducts = searchParams.SortBy switch
             {
                 "price" => products.OrderBy(p => p.Price).ToList(),
