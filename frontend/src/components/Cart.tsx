@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ShoppingCart, X, Leaf, TrendingDown, Trash2 } from 'lucide-react';
 import { Product } from '@/types';
+import Checkout from './Checkout';
 
 interface CartProps {
   items: CartItem[];
@@ -16,6 +17,7 @@ interface CartItem {
 
 export default function Cart({ items, onRemove, onClear, onCheckout }: CartProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [showCheckout, setShowCheckout] = useState(false);
 
   const totalPrice = items.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
   const averageSustainability = items.length > 0
@@ -36,6 +38,16 @@ export default function Cart({ items, onRemove, onClear, onCheckout }: CartProps
     return 'text-orange-600';
   };
 
+  const handleCheckoutClick = () => {
+    setShowCheckout(true);
+    setIsOpen(false);
+  };
+
+  const handleCheckoutComplete = () => {
+    onClear();
+    setShowCheckout(false);
+  };
+
   return (
     <>
       {/* Cart Button */}
@@ -50,6 +62,14 @@ export default function Cart({ items, onRemove, onClear, onCheckout }: CartProps
           </span>
         )}
       </button>
+
+      {/* Checkout Modal */}
+      <Checkout
+        items={items}
+        isOpen={showCheckout}
+        onClose={() => setShowCheckout(false)}
+        onComplete={handleCheckoutComplete}
+      />
 
       {/* Cart Sidebar */}
       {isOpen && (
@@ -88,31 +108,24 @@ export default function Cart({ items, onRemove, onClear, onCheckout }: CartProps
                 </h3>
                 
                 <div className="grid grid-cols-2 gap-3">
-                  {/* Average Sustainability */}
                   <div className="bg-white rounded-lg p-3">
                     <p className="text-xs text-gray-600 mb-1">Avg. Score</p>
                     <p className={`text-2xl font-bold ${getSustainabilityColor(averageSustainability)}`}>
                       {averageSustainability.toFixed(0)}
                     </p>
                   </div>
-
-                  {/* Carbon Footprint */}
                   <div className="bg-white rounded-lg p-3">
                     <p className="text-xs text-gray-600 mb-1">Carbon (kg)</p>
                     <p className="text-2xl font-bold text-gray-800">
                       {totalCarbonFootprint.toFixed(1)}
                     </p>
                   </div>
-
-                  {/* Water Usage */}
                   <div className="bg-white rounded-lg p-3">
                     <p className="text-xs text-gray-600 mb-1">Water (L)</p>
                     <p className="text-2xl font-bold text-blue-600">
                       {totalWaterUsage.toFixed(0)}
                     </p>
                   </div>
-
-                  {/* Recyclable */}
                   <div className="bg-white rounded-lg p-3">
                     <p className="text-xs text-gray-600 mb-1">Recyclable</p>
                     <p className="text-2xl font-bold text-green-600">
@@ -123,7 +136,6 @@ export default function Cart({ items, onRemove, onClear, onCheckout }: CartProps
                   </div>
                 </div>
 
-                {/* Sustainability Message */}
                 {averageSustainability >= 80 && (
                   <div className="mt-3 bg-green-100 border border-green-200 rounded-lg p-2">
                     <p className="text-xs text-green-800 text-center">
@@ -179,7 +191,6 @@ export default function Cart({ items, onRemove, onClear, onCheckout }: CartProps
                         </button>
                       </div>
 
-                      {/* Item Metrics */}
                       <div className="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-gray-100">
                         <div className="text-center">
                           <p className="text-xs text-gray-500">Carbon</p>
@@ -209,7 +220,6 @@ export default function Cart({ items, onRemove, onClear, onCheckout }: CartProps
             {/* Footer */}
             {items.length > 0 && (
               <div className="border-t border-gray-200 p-4 bg-gray-50">
-                {/* Total */}
                 <div className="flex justify-between items-center mb-4">
                   <span className="text-lg font-semibold text-gray-700">Total</span>
                   <span className="text-2xl font-bold text-gray-900">
@@ -217,13 +227,12 @@ export default function Cart({ items, onRemove, onClear, onCheckout }: CartProps
                   </span>
                 </div>
 
-                {/* Action Buttons */}
                 <div className="space-y-2">
                   <button
-                    onClick={onCheckout}
+                    onClick={handleCheckoutClick}
                     className="w-full py-3 bg-sustainable-600 text-white rounded-lg hover:bg-sustainable-700 transition-colors font-semibold"
                   >
-                    Checkout
+                    Proceed to Checkout
                   </button>
                   <button
                     onClick={onClear}
@@ -234,7 +243,6 @@ export default function Cart({ items, onRemove, onClear, onCheckout }: CartProps
                   </button>
                 </div>
 
-                {/* Eco Tip */}
                 <div className="mt-4 bg-sustainable-100 border border-sustainable-200 rounded-lg p-3">
                   <p className="text-xs text-sustainable-800">
                     <strong>♻️ Eco Tip:</strong> Your purchases support sustainable practices 
