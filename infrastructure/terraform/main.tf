@@ -11,13 +11,6 @@ terraform {
       version = "~> 3.0"
     }
   }
-
-  backend "azurerm" {
-    resource_group_name  = "terraform-state-rg"
-    storage_account_name = "tfstatesustainretail"
-    container_name       = "tfstate"
-    key                  = "sustainable-retail.tfstate"
-  }
 }
 
 provider "azurerm" {
@@ -29,22 +22,6 @@ provider "azurerm" {
       purge_soft_delete_on_destroy = true
     }
   }
-}
-
-# Variables
-variable "location" {
-  description = "Azure region"
-  default     = "eastus"
-}
-
-variable "environment" {
-  description = "Environment name"
-  default     = "production"
-}
-
-variable "project_name" {
-  description = "Project name"
-  default     = "sustainable-retail"
 }
 
 # Random suffix for unique resource names
@@ -92,7 +69,7 @@ resource "azurerm_service_plan" "main" {
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   os_type             = "Linux"
-  sku_name            = "P1v2"
+  sku_name            = var.app_service_sku
   tags                = local.common_tags
 }
 
@@ -108,7 +85,8 @@ resource "azurerm_linux_web_app" "frontend" {
     application_stack {
       node_version = "18-lts"
     }
-    always_on        = true
+    # always_on requires Standard tier or higher
+    always_on        = can(regex("^(S|P)", var.app_service_sku)) ? true : false
     health_check_path = "/"
     
     cors {
@@ -139,7 +117,8 @@ resource "azurerm_linux_web_app" "backend" {
     application_stack {
       dotnet_version = "8.0"
     }
-    always_on         = true
+    # always_on requires Standard tier or higher
+    always_on         = can(regex("^(S|P)", var.app_service_sku)) ? true : false
     health_check_path = "/health"
     
     cors {
@@ -169,13 +148,13 @@ resource "azurerm_linux_web_app" "backend" {
   }
 }
 
-# Cosmos DB (MongoDB API + SQL API)
+# Cosmos DB (MongoDB API)
 resource "azurerm_cosmosdb_account" "main" {
   name                = "${var.project_name}-cosmos-${local.resource_suffix}"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
   offer_type          = "Standard"
-  kind                = "GlobalDocumentDB"
+  kind                = "MongoDB"
   tags                = local.common_tags
 
   capabilities {
@@ -197,36 +176,29 @@ resource "azurerm_cosmosdb_account" "main" {
     failover_priority = 0
   }
 
-  # Enable multi-region for global distribution
-  geo_location {
-    location          = "westus2"
-    failover_priority = 1
+  # Optional multi-region deployment
+  dynamic "geo_location" {
+    for_each = var.enable_multi_region ? [1] : []
+    content {
+      location          = "westus2"
+      failover_priority = 1
+    }
   }
 }
 
-# Cosmos DB SQL Database (for user profiles)
-resource "azurerm_cosmosdb_sql_database" "main" {
-  name                = "RetailAssistant"
-  resource_group_name = azurerm_resource_group.main.name
-  account_name        = azurerm_cosmosdb_account.main.name
-}
+# Note: MongoDB kind doesn't support SQL API containers
+# If you need SQL API, create a separate Cosmos DB account with GlobalDocumentDB kind
+# Commenting out SQL-specific resources for now
 
-# Cosmos DB Containers
-resource "azurerm_cosmosdb_sql_container" "user_profiles" {
-  name                = "UserProfiles"
-  resource_group_name = azurerm_resource_group.main.name
-  account_name        = azurerm_cosmosdb_account.main.name
-  database_name       = azurerm_cosmosdb_sql_database.main.name
-  partition_key_path  = "/userId"
-}
-
-resource "azurerm_cosmosdb_sql_container" "user_interactions" {
-  name                = "UserInteractions"
-  resource_group_name = azurerm_resource_group.main.name
-  account_name        = azurerm_cosmosdb_account.main.name
-  database_name       = azurerm_cosmosdb_sql_database.main.name
-  partition_key_path  = "/userId"
-}
+# Uncomment and create separate account if you need both APIs:
+# resource "azurerm_cosmosdb_account" "sql" {
+#   name                = "${var.project_name}-cosmos-sql-${local.resource_suffix}"
+#   location            = azurerm_resource_group.main.location
+#   resource_group_name = azurerm_resource_group.main.name
+#   offer_type          = "Standard"
+#   kind                = "GlobalDocumentDB"
+#   ...
+# }
 
 # Azure Cognitive Services
 resource "azurerm_cognitive_account" "main" {
@@ -249,9 +221,9 @@ resource "azurerm_search_service" "main" {
   tags                = local.common_tags
 }
 
-# Key Vault
+# Key Vault - Fixed: Shortened name to meet 3-24 character requirement
 resource "azurerm_key_vault" "main" {
-  name                = "${var.project_name}-kv-${local.resource_suffix}"
+  name                = "sr-kv-${local.resource_suffix}"  # Shortened from full project name
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
   tenant_id           = data.azurerm_client_config.current.tenant_id
@@ -330,6 +302,7 @@ resource "random_password" "postgres_password" {
   special = true
 }
 
+# PostgreSQL Flexible Server
 resource "azurerm_postgresql_flexible_server" "main" {
   name                   = "${var.project_name}-postgres-${local.resource_suffix}"
   resource_group_name    = azurerm_resource_group.main.name
@@ -338,10 +311,12 @@ resource "azurerm_postgresql_flexible_server" "main" {
   administrator_login    = "pgadmin"
   administrator_password = random_password.postgres_password.result
   storage_mb             = 32768
-  sku_name               = "GP_Standard_D2s_v3"
+  sku_name               = var.postgres_sku
   tags                   = local.common_tags
 
-  zone = "1"
+  # Zone is only supported for General Purpose and Memory Optimized tiers
+  # Commenting out for Burstable tier
+  # zone = "1"
 }
 
 # PostgreSQL Firewall Rule - Allow Azure Services
@@ -360,8 +335,9 @@ resource "azurerm_postgresql_flexible_server_database" "main" {
   charset   = "utf8"
 }
 
-# Deployment Slots for Canary Deployments
+# Deployment Slots for Canary Deployments (requires Standard tier or higher)
 resource "azurerm_linux_web_app_slot" "frontend_canary" {
+  count          = var.enable_canary_deployment ? 1 : 0
   name           = "canary"
   app_service_id = azurerm_linux_web_app.frontend.id
 
@@ -374,6 +350,7 @@ resource "azurerm_linux_web_app_slot" "frontend_canary" {
 }
 
 resource "azurerm_linux_web_app_slot" "backend_canary" {
+  count          = var.enable_canary_deployment ? 1 : 0
   name           = "canary"
   app_service_id = azurerm_linux_web_app.backend.id
 
