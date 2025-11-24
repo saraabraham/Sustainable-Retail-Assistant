@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: sustainable-retail-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: RetailAssistant
+
+  postgres:
+    image: postgres:14
+    container_name: sustainable-retail-postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: retail_assistant
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+
+  backend:
+    build:
+      context: ./backend/RecommendationService
+      dockerfile: Dockerfile
+    container_name: sustainable-retail-backend
+    ports:
+      - "5000:80"
+    depends_on:
+      - mongodb
+      - postgres
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - MongoDB__ConnectionString=mongodb://mongodb:27017
+      - MongoDB__DatabaseName=RetailAssistant
+      - ConnectionStrings__PostgreSQL=Host=postgres;Database=retail_assistant;Username=postgres;Password=password
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: sustainable-retail-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:80/api
+
+volumes:
+  mongodb_data:
+  postgres_data:

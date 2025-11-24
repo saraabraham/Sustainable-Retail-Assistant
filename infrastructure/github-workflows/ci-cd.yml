@@ -1,0 +1,237 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+env:
+  AZURE_WEBAPP_NAME: sustainable-retail-assistant
+  NODE_VERSION: '18.x'
+  DOTNET_VERSION: '8.0.x'
+
+jobs:
+  # Frontend Tests and Build
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: './frontend/package-lock.json'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint
+
+      - name: Run type check
+        run: npm run type-check
+
+      - name: Run unit tests
+        run: npm run test:coverage
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./frontend/coverage/coverage-final.json
+          flags: frontend
+
+      - name: Build application
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: ${{ secrets.API_URL }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: frontend-build
+          path: ./frontend/.next
+
+  # Backend Tests and Build
+  backend:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore ./backend/RecommendationService
+
+      - name: Build
+        run: dotnet build ./backend/RecommendationService --no-restore
+
+      - name: Run tests
+        run: dotnet test ./backend/RecommendationService.Tests --no-build --verbosity normal --collect:"XPlat Code Coverage"
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./backend/**/coverage.cobertura.xml
+          flags: backend
+
+  # E2E Tests
+  e2e:
+    needs: [frontend, backend]
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Install Playwright browsers
+        working-directory: ./frontend
+        run: npx playwright install --with-deps
+
+      - name: Run E2E tests
+        working-directory: ./frontend
+        run: npm run test:e2e
+        env:
+          BASE_URL: http://localhost:3000
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: ./frontend/playwright-report/
+
+  # Recommendation Accuracy Tests
+  recommendation-accuracy:
+    needs: backend
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Run recommendation accuracy tests
+        working-directory: ./frontend
+        run: npm run test:recommendations
+
+  # Canary Deployment (only on main branch)
+  deploy-canary:
+    if: github.ref == 'refs/heads/main'
+    needs: [frontend, backend, e2e, recommendation-accuracy]
+    runs-on: ubuntu-latest
+    environment: production
+    
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Download frontend artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: frontend-build
+          path: ./frontend/.next
+
+      - name: Deploy to Canary (10% traffic)
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}-canary
+          slot-name: canary
+          package: ./frontend
+
+      - name: Run smoke tests on canary
+        run: |
+          curl -f https://${{ env.AZURE_WEBAPP_NAME }}-canary.azurewebsites.net/health || exit 1
+
+      - name: Monitor canary metrics
+        run: |
+          # Wait for 5 minutes to collect metrics
+          sleep 300
+          # Check error rate, response time, etc.
+          # If metrics are good, proceed to full deployment
+
+  # Full Production Deployment
+  deploy-production:
+    needs: deploy-canary
+    runs-on: ubuntu-latest
+    environment: production
+    
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Promote canary to production
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az webapp deployment slot swap \
+              --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+              --name ${{ env.AZURE_WEBAPP_NAME }} \
+              --slot canary \
+              --target-slot production
+
+      - name: Verify production deployment
+        run: |
+          curl -f https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net/health || exit 1
+
+  # Rollback on failure
+  rollback:
+    if: failure()
+    needs: deploy-production
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Rollback deployment
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az webapp deployment slot swap \
+              --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+              --name ${{ env.AZURE_WEBAPP_NAME }} \
+              --slot production \
+              --target-slot canary
+
+      - name: Notify team
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          text: 'Production deployment failed and was rolled back'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
