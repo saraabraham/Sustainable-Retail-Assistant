@@ -88,11 +88,8 @@ resource "azurerm_container_group" "backend" {
     }
 
     environment_variables = {
-  ASPNETCORE_ENVIRONMENT = "Production"
-  ASPNETCORE_URLS = "http://+:5000"
-  MongoDB__ConnectionString = azurerm_cosmosdb_account.main.connection_strings[0]
-  ConnectionStrings__PostgreSQL = "Host=${azurerm_postgresql_flexible_server.main.fqdn};Database=retail_assistant;Username=adminuser;Password=P@ssw0rd1234!;SslMode=Require"
-}
+      ASPNETCORE_ENVIRONMENT = "Production"
+    }
   }
 }
 
@@ -134,83 +131,4 @@ output "backend_url" {
 
 output "frontend_url" {
   value = "http://${azurerm_container_group.frontend.fqdn}:3000"
-}
-
-# Cosmos DB with MongoDB API (Serverless - Free tier available)
-resource "azurerm_cosmosdb_account" "main" {
-  name                = "sustainable-cosmos-${random_string.suffix.result}"
-  resource_group_name = azurerm_resource_group.main.name
-  location            = azurerm_resource_group.main.location
-  offer_type          = "Standard"
-  kind                = "MongoDB"
-
-  capabilities {
-    name = "EnableMongo"
-  }
-
-  capabilities {
-    name = "EnableServerless"
-  }
-
-  consistency_policy {
-    consistency_level = "Session"
-  }
-
-  geo_location {
-    location          = azurerm_resource_group.main.location
-    failover_priority = 0
-  }
-}
-
-# Cosmos DB MongoDB Database
-resource "azurerm_cosmosdb_mongo_database" "main" {
-  name                = "RetailAssistant"
-  resource_group_name = azurerm_cosmosdb_account.main.resource_group_name
-  account_name        = azurerm_cosmosdb_account.main.name
-}
-
-# PostgreSQL Flexible Server - Try West US 2 (different from West US)
-resource "azurerm_postgresql_flexible_server" "main" {
-  name                = "sustainable-postgres-${random_string.suffix.result}"
-  resource_group_name = azurerm_resource_group.main.name
-  location            = "westus2"  # Different region
-  version             = "14"
-  
-  administrator_login    = "adminuser"
-  administrator_password = "P@ssw0rd1234!"  # Change this!
-  
-  storage_mb = 32768
-  sku_name   = "B_Standard_B1ms"  # Burstable tier - cheapest
-  
-  backup_retention_days = 7
-}
-
-# PostgreSQL Database
-resource "azurerm_postgresql_flexible_server_database" "main" {
-  name      = "retail_assistant"
-  server_id = azurerm_postgresql_flexible_server.main.id
-  charset   = "UTF8"
-  collation = "en_US.utf8"
-}
-
-# Firewall rule to allow Azure services
-resource "azurerm_postgresql_flexible_server_firewall_rule" "azure_services" {
-  name             = "AllowAzureServices"
-  server_id        = azurerm_postgresql_flexible_server.main.id
-  start_ip_address = "0.0.0.0"
-  end_ip_address   = "0.0.0.0"
-}
-
-# Update backend container with database connections
-# Remove the old backend container and add this updated one
-# (Don't run yet - I'll show the full updated backend next)
-
-output "cosmos_connection_string" {
-  value     = azurerm_cosmosdb_account.main.connection_strings[0]
-  sensitive = true
-}
-
-output "postgres_connection_string" {
-  value     = "Host=${azurerm_postgresql_flexible_server.main.fqdn};Database=retail_assistant;Username=adminuser;Password=P@ssw0rd1234!;SslMode=Require"
-  sensitive = true
 }
