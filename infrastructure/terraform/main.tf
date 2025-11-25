@@ -1,3 +1,9 @@
+
+variable "postgres_password" {
+  description = "PostgreSQL admin password"
+  type        = string
+  sensitive   = true
+}
 terraform {
   required_version = ">= 1.0"
   
@@ -91,7 +97,7 @@ resource "azurerm_container_group" "backend" {
   ASPNETCORE_ENVIRONMENT = "Production"
   ASPNETCORE_URLS = "http://+:5000"
   MongoDB__ConnectionString = azurerm_cosmosdb_account.main.connection_strings[0]
-  ConnectionStrings__PostgreSQL = "Host=${azurerm_postgresql_flexible_server.main.fqdn};Database=retail_assistant;Username=adminuser;Password=P@ssw0rd1234!;SslMode=Require"
+  ConnectionStrings__PostgreSQL = "Host=${azurerm_postgresql_flexible_server.main.fqdn};Database=retail_assistant;Username=adminuser;Password=${var.postgres_password};SslMode=Require"
 }
   }
 }
@@ -177,7 +183,7 @@ resource "azurerm_postgresql_flexible_server" "main" {
   version             = "14"
   
   administrator_login    = "adminuser"
-  administrator_password = "P@ssw0rd1234!"  # Change this!
+  administrator_password = var.postgres_password  
   
   storage_mb = 32768
   sku_name   = "B_Standard_B1ms"  # Burstable tier - cheapest
@@ -211,6 +217,6 @@ output "cosmos_connection_string" {
 }
 
 output "postgres_connection_string" {
-  value     = "Host=${azurerm_postgresql_flexible_server.main.fqdn};Database=retail_assistant;Username=adminuser;Password=P@ssw0rd1234!;SslMode=Require"
+  value     = "Host=${azurerm_postgresql_flexible_server.main.fqdn};Database=retail_assistant;Username=adminuser;Password=${var.postgres_password};SslMode=Require"
   sensitive = true
 }
