@@ -97,3 +97,5 @@ logs
 # Database
 *.db
 *.sqlite
+appsettings.Azure.json
+appsettings.*.json
