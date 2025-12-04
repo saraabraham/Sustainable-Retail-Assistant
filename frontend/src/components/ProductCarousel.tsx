@@ -9,6 +9,8 @@ interface ProductCarouselProps {
   onFilterChange?: (filters: ProductFilters) => void;
   title?: string;
   onProductSelect?: (product: Product) => void;
+  onAddToCart?: (product: Product) => void;
+  onViewTCO?: (product: Product) => void;
 }
 
 export default function ProductCarousel({
@@ -17,6 +19,8 @@ export default function ProductCarousel({
   onFilterChange,
   title = 'Recommended Products',
   onProductSelect,
+  onAddToCart,
+  onViewTCO,
 }: ProductCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
@@ -41,7 +45,7 @@ export default function ProductCarousel({
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-gray-800">{title}</h2>
-        
+
         <button
           onClick={() => setShowFilters(!showFilters)}
           className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
@@ -156,7 +160,7 @@ export default function ProductCarousel({
             >
               <ChevronLeft className="w-6 h-6 text-gray-700" />
             </button>
-            
+
             <button
               onClick={nextSlide}
               disabled={currentIndex + itemsPerPage >= products.length}
@@ -174,6 +178,8 @@ export default function ProductCarousel({
               key={product.id}
               product={product}
               onSelect={onProductSelect}
+              onAddToCart={onAddToCart}
+              onViewTCO={onViewTCO}
             />
           ))}
         </div>
@@ -202,11 +208,10 @@ export default function ProductCarousel({
               <button
                 key={index}
                 onClick={() => setCurrentIndex(index * itemsPerPage)}
-                className={`w-2 h-2 rounded-full transition-all ${
-                  Math.floor(currentIndex / itemsPerPage) === index
+                className={`w-2 h-2 rounded-full transition-all ${Math.floor(currentIndex / itemsPerPage) === index
                     ? 'bg-sustainable-600 w-6'
                     : 'bg-gray-300'
-                }`}
+                  }`}
               />
             )
           )}

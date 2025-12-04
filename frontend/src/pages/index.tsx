@@ -34,7 +34,7 @@ export default function Home() {
 
   const handleAddToCart = (product: Product) => {
     const existingItem = cartItems.find(item => item.product.id === product.id);
-    
+
     if (existingItem) {
       setCartItems(cartItems.map(item =>
         item.product.id === product.id
@@ -148,23 +148,11 @@ export default function Home() {
                 products={recommendations}
                 filters={filters}
                 onFilterChange={setFilters}
-                onProductSelect={(product) => {
-                  handleProductSelect(product);
-                  handleAddToCart(product);
-                }}
+                onProductSelect={handleProductSelect}
+                onAddToCart={handleAddToCart}
+                onViewTCO={handleViewTCO}
                 title="Your Personalized Recommendations"
               />
-              
-              {/* Quick Actions for Products */}
-              <div className="mt-4 flex justify-center gap-4">
-                <button
-                  onClick={() => recommendations.length > 0 && handleViewTCO(recommendations[0])}
-                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                  disabled={recommendations.length === 0}
-                >
-                  View TCO Calculator
-                </button>
-              </div>
             </div>
           )}
 

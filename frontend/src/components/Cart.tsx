@@ -106,7 +106,7 @@ export default function Cart({ items, onRemove, onClear, onCheckout }: CartProps
                   <Leaf className="w-4 h-4 text-sustainable-600" />
                   Sustainability Metrics
                 </h3>
-                
+
                 <div className="grid grid-cols-2 gap-3">
                   <div className="bg-white rounded-lg p-3">
                     <p className="text-xs text-gray-600 mb-1">Avg. Score</p>
@@ -129,7 +129,7 @@ export default function Cart({ items, onRemove, onClear, onCheckout }: CartProps
                   <div className="bg-white rounded-lg p-3">
                     <p className="text-xs text-gray-600 mb-1">Recyclable</p>
                     <p className="text-2xl font-bold text-green-600">
-                      {(items.reduce((sum, item) => 
+                      {(items.reduce((sum, item) =>
                         sum + item.product.environmentalImpact.recyclablePercentage, 0
                       ) / items.length).toFixed(0)}%
                     </p>
@@ -245,7 +245,7 @@ export default function Cart({ items, onRemove, onClear, onCheckout }: CartProps
 
                 <div className="mt-4 bg-sustainable-100 border border-sustainable-200 rounded-lg p-3">
                   <p className="text-xs text-sustainable-800">
-                    <strong>♻️ Eco Tip:</strong> Your purchases support sustainable practices 
+                    <strong>♻️ Eco Tip:</strong> Your purchases support sustainable practices
                     and reduce environmental impact!
                   </p>
                 </div>

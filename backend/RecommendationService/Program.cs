@@ -18,7 +18,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // MongoDB Configuration
-var mongoConnectionString = builder.Configuration["MongoDB:ConnectionString"] 
+var mongoConnectionString = builder.Configuration["MongoDB:ConnectionString"]
     ?? "mongodb://localhost:27017";
 var mongoDatabaseName = builder.Configuration["MongoDB:DatabaseName"] ?? "RetailAssistant";
 
@@ -58,6 +58,23 @@ builder.Services.AddScoped<IUserInteractionRepository, UserInteractionRepository
 // Health checks
 builder.Services.AddHealthChecks();
 
+// ✅ ADD CORS POLICY - Supports both local development and production
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("LocalAndProductionPolicy", corsBuilder =>
+    {
+        corsBuilder
+            .WithOrigins(
+                "http://localhost:3000",
+                "https://localhost:3000",
+                "https://sustainable-frontend.purplesea-8944c35f.westus.azurecontainerapps.io"
+            )
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials();
+    });
+});
+
 var app = builder.Build();
 
 // Apply database migrations
@@ -75,8 +92,8 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// *** CUSTOM CORS MIDDLEWARE - MUST BE FIRST ***
-app.UseMiddleware<CorsMiddleware>();
+// ✅ REPLACE CUSTOM MIDDLEWARE WITH BUILT-IN CORS
+app.UseCors("LocalAndProductionPolicy");
 
 // Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
@@ -99,7 +116,7 @@ using (var scope = app.Services.CreateScope())
 Console.WriteLine("✅ Backend is running!");
 Console.WriteLine("📍 API: http://localhost:5000");
 Console.WriteLine("📚 Swagger: http://localhost:5000/swagger");
-Console.WriteLine("🌐 CORS: Custom middleware enabled");
+Console.WriteLine("🌐 CORS: Built-in policy enabled (localhost + production)");
 Console.WriteLine("🗄️  MongoDB: Connected for products");
 Console.WriteLine("🐘 PostgreSQL: Connected for user data");
 

@@ -1,10 +1,12 @@
 import React from 'react';
-import { Leaf, Award, Recycle, TrendingUp } from 'lucide-react';
+import { Leaf, Award, Recycle, TrendingUp, ShoppingCart, Calculator } from 'lucide-react';
 import { Product } from '@/types';
 
 interface ProductCardProps {
   product: Product;
   onSelect?: (product: Product) => void;
+  onAddToCart?: (product: Product) => void;
+  onViewTCO?: (product: Product) => void;  // ADD THIS
   showSustainabilityBadge?: boolean;
   compact?: boolean;
 }
@@ -12,6 +14,8 @@ interface ProductCardProps {
 export default function ProductCard({
   product,
   onSelect,
+  onAddToCart,
+  onViewTCO,  // ADD THIS
   showSustainabilityBadge = true,
   compact = false,
 }: ProductCardProps) {
@@ -29,19 +33,20 @@ export default function ProductCard({
 
   return (
     <div
-      className={`bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer group ${
-        compact ? 'flex' : 'flex flex-col'
-      }`}
-      onClick={() => onSelect?.(product)}
+      className={`bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group ${compact ? 'flex' : 'flex flex-col'
+        }`}
     >
-      {/* Image */}
-      <div className={`relative ${compact ? 'w-32 h-32' : 'w-full h-48'} overflow-hidden`}>
+      {/* Image - Make it clickable for details */}
+      <div
+        className={`relative ${compact ? 'w-32 h-32' : 'w-full h-48'} overflow-hidden cursor-pointer`}
+        onClick={() => onSelect?.(product)}
+      >
         <img
           src={product.imageUrl}
           alt={product.name}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
         />
-        
+
         {showSustainabilityBadge && (
           <div
             className={`absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-semibold ${getSustainabilityColor(
@@ -67,7 +72,7 @@ export default function ProductCard({
         <h3 className={`font-semibold text-gray-800 mb-1 ${compact ? 'text-sm' : 'text-lg'}`}>
           {product.name}
         </h3>
-        
+
         {!compact && (
           <p className="text-sm text-gray-600 mb-3 line-clamp-2">
             {product.description}
@@ -85,7 +90,7 @@ export default function ProductCard({
               {cert}
             </span>
           ))}
-          
+
           {product.circularEconomyOptions.length > 0 && (
             <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full">
               <Recycle className="w-3 h-3" />
@@ -101,7 +106,7 @@ export default function ProductCard({
               ${product.price.toFixed(2)}
             </span>
           </div>
-          
+
           <div className={`px-3 py-1 rounded-full text-xs font-medium ${getSustainabilityColor(product.sustainabilityScore)}`}>
             {getSustainabilityLabel(product.sustainabilityScore)}
           </div>
@@ -115,16 +120,42 @@ export default function ProductCard({
           </div>
         )}
 
+        {/* Buttons */}
         {!compact && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onSelect?.(product);
-            }}
-            className="mt-4 w-full py-2 bg-sustainable-600 text-white rounded-lg hover:bg-sustainable-700 transition-colors font-medium"
-          >
-            View Details
-          </button>
+          <div className="mt-4 space-y-2">
+            <div className="flex gap-2">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSelect?.(product);
+                }}
+                className="flex-1 py-2 border border-sustainable-600 text-sustainable-600 rounded-lg hover:bg-sustainable-50 transition-colors font-medium text-sm"
+              >
+                View Details
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAddToCart?.(product);
+                }}
+                disabled={!product.inStock}
+                className="flex-1 py-2 bg-sustainable-600 text-white rounded-lg hover:bg-sustainable-700 transition-colors font-medium disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-1 text-sm"
+              >
+                <ShoppingCart className="w-4 h-4" />
+                Add to Cart
+              </button>
+            </div>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onViewTCO?.(product);
+              }}
+              className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center justify-center gap-2 text-sm"
+            >
+              <Calculator className="w-4 h-4" />
+              View TCO Calculator
+            </button>
+          </div>
         )}
       </div>
     </div>
