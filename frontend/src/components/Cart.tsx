@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { ShoppingCart, X, Leaf, TrendingDown, Trash2 } from 'lucide-react';
+import { ShoppingCart, X, Leaf, TrendingDown, Trash2, Plus, Minus } from 'lucide-react';
 import { Product } from '@/types';
 import Checkout from './Checkout';
 
 interface CartProps {
   items: CartItem[];
   onRemove: (productId: string) => void;
+  onUpdateQuantity: (productId: string, quantity: number) => void;  // ADD THIS
   onClear: () => void;
   onCheckout?: () => void;
 }
@@ -15,9 +16,12 @@ interface CartItem {
   quantity: number;
 }
 
-export default function Cart({ items, onRemove, onClear, onCheckout }: CartProps) {
+export default function Cart({ items, onRemove, onUpdateQuantity, onClear, onCheckout }: CartProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
+
+  // Calculate total items (sum of quantities)
+  const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
   const totalPrice = items.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
   const averageSustainability = items.length > 0
@@ -48,6 +52,24 @@ export default function Cart({ items, onRemove, onClear, onCheckout }: CartProps
     setShowCheckout(false);
   };
 
+  const incrementQuantity = (productId: string) => {
+    const item = items.find(i => i.product.id === productId);
+    if (item) {
+      onUpdateQuantity(productId, item.quantity + 1);
+    }
+  };
+
+  const decrementQuantity = (productId: string) => {
+    const item = items.find(i => i.product.id === productId);
+    if (item) {
+      if (item.quantity > 1) {
+        onUpdateQuantity(productId, item.quantity - 1);
+      } else {
+        onRemove(productId);
+      }
+    }
+  };
+
   return (
     <>
       {/* Cart Button */}
@@ -56,9 +78,9 @@ export default function Cart({ items, onRemove, onClear, onCheckout }: CartProps
         className="fixed top-20 right-6 z-50 bg-sustainable-600 text-white p-4 rounded-full shadow-lg hover:bg-sustainable-700 transition-all"
       >
         <ShoppingCart className="w-6 h-6" />
-        {items.length > 0 && (
+        {totalItems > 0 && (
           <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-6 h-6 rounded-full flex items-center justify-center font-bold">
-            {items.length}
+            {totalItems}
           </span>
         )}
       </button>
@@ -88,7 +110,7 @@ export default function Cart({ items, onRemove, onClear, onCheckout }: CartProps
                 <ShoppingCart className="w-6 h-6" />
                 <div>
                   <h2 className="text-xl font-bold">My Cart</h2>
-                  <p className="text-sm opacity-90">{items.length} items</p>
+                  <p className="text-sm opacity-90">{totalItems} items</p>
                 </div>
               </div>
               <button
@@ -179,29 +201,58 @@ export default function Cart({ items, onRemove, onClear, onCheckout }: CartProps
                               {item.product.sustainabilityScore}
                             </span>
                           </div>
-                          <p className="text-lg font-bold text-gray-900 mt-2">
-                            ${item.product.price.toFixed(2)}
+
+                          {/* Price per unit */}
+                          <p className="text-sm text-gray-600 mt-1">
+                            ${item.product.price.toFixed(2)} each
+                          </p>
+
+                          {/* Quantity Controls */}
+                          <div className="flex items-center gap-3 mt-2">
+                            <div className="flex items-center gap-2 bg-gray-100 rounded-lg">
+                              <button
+                                onClick={() => decrementQuantity(item.product.id)}
+                                className="p-1.5 hover:bg-gray-200 rounded-l-lg transition-colors"
+                              >
+                                <Minus className="w-4 h-4 text-gray-700" />
+                              </button>
+                              <span className="px-3 py-1 font-semibold text-gray-900 min-w-[2rem] text-center">
+                                {item.quantity}
+                              </span>
+                              <button
+                                onClick={() => incrementQuantity(item.product.id)}
+                                className="p-1.5 hover:bg-gray-200 rounded-r-lg transition-colors"
+                              >
+                                <Plus className="w-4 h-4 text-gray-700" />
+                              </button>
+                            </div>
+
+                            <button
+                              onClick={() => onRemove(item.product.id)}
+                              className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+
+                          {/* Subtotal */}
+                          <p className="text-base font-bold text-sustainable-600 mt-2">
+                            Subtotal: ${(item.product.price * item.quantity).toFixed(2)}
                           </p>
                         </div>
-                        <button
-                          onClick={() => onRemove(item.product.id)}
-                          className="text-red-500 hover:text-red-700 p-1"
-                        >
-                          <X className="w-5 h-5" />
-                        </button>
                       </div>
 
                       <div className="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-gray-100">
                         <div className="text-center">
                           <p className="text-xs text-gray-500">Carbon</p>
                           <p className="text-xs font-semibold text-gray-700">
-                            {item.product.environmentalImpact.carbonFootprint}kg
+                            {(item.product.environmentalImpact.carbonFootprint * item.quantity).toFixed(1)}kg
                           </p>
                         </div>
                         <div className="text-center">
                           <p className="text-xs text-gray-500">Water</p>
                           <p className="text-xs font-semibold text-gray-700">
-                            {item.product.environmentalImpact.waterUsage}L
+                            {(item.product.environmentalImpact.waterUsage * item.quantity).toFixed(0)}L
                           </p>
                         </div>
                         <div className="text-center">

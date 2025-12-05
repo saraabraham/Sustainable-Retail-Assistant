@@ -16,7 +16,7 @@ public static class SampleDataSeeder
 
         var products = new List<Product>
         {
-            // FURNITURE - High-end sustainable options
+            // FURNITURE - High-end sustainable options (6 products)
             new Product
             {
                 Name = "Eco-Friendly Bamboo Dining Table",
@@ -41,7 +41,7 @@ public static class SampleDataSeeder
                 },
                 Tags = new List<string> { "sustainable", "bamboo", "furniture", "dining", "eco-friendly" }
             },
-            
+
             new Product
             {
                 Name = "Recycled Plastic Office Chair",
@@ -94,6 +94,81 @@ public static class SampleDataSeeder
 
             new Product
             {
+                Name = "Hemp Fiber Desk",
+                Description = "Modern minimalist desk made from hemp fiber composite. Lightweight yet durable.",
+                Category = "furniture",
+                Price = 395.00m,
+                ImageUrl = "https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=400",
+                SustainabilityScore = 87,
+                InStock = true,
+                EnvironmentalImpact = new EnvironmentalImpact
+                {
+                    CarbonFootprint = 22.0,
+                    WaterUsage = 100,
+                    RecyclablePercentage = 90,
+                    EnergyEfficiency = "A+",
+                    Certifications = new List<string> { "Hemp Certified", "Low VOC" }
+                },
+                CircularEconomyOptions = new List<CircularEconomyOption>
+                {
+                    new CircularEconomyOption { Type = "repair", Description = "Modular design for easy repairs" },
+                    new CircularEconomyOption { Type = "recycle", Description = "Full recycling program" }
+                },
+                Tags = new List<string> { "sustainable", "hemp", "furniture", "desk", "office" }
+            },
+
+            new Product
+            {
+                Name = "Recycled Plastic Desk Chair",
+                Description = "Ergonomic desk chair made from recycled plastic bottles. Adjustable height and back support.",
+                Category = "furniture",
+                Price = 145.00m,
+                ImageUrl = "https://images.unsplash.com/photo-1592078615290-033ee584e267?w=400",
+                SustainabilityScore = 84,
+                InStock = true,
+                EnvironmentalImpact = new EnvironmentalImpact
+                {
+                    CarbonFootprint = 15.0,
+                    WaterUsage = 70,
+                    RecyclablePercentage = 100,
+                    EnergyEfficiency = "A",
+                    Certifications = new List<string> { "Recycled Plastic" }
+                },
+                CircularEconomyOptions = new List<CircularEconomyOption>
+                {
+                    new CircularEconomyOption { Type = "repair", Description = "5-year warranty" },
+                    new CircularEconomyOption { Type = "recycle", Description = "Recycling program available" }
+                },
+                Tags = new List<string> { "sustainable", "recycled", "furniture", "chair", "office", "budget" }
+            },
+
+            new Product
+            {
+                Name = "Sustainable Wood Coffee Table",
+                Description = "Modern coffee table made from FSC-certified sustainable wood with natural finish.",
+                Category = "furniture",
+                Price = 275.00m,
+                ImageUrl = "https://images.unsplash.com/photo-1532372576444-dda954194ad0?w=400",
+                SustainabilityScore = 88,
+                InStock = true,
+                EnvironmentalImpact = new EnvironmentalImpact
+                {
+                    CarbonFootprint = 20.0,
+                    WaterUsage = 100,
+                    RecyclablePercentage = 90,
+                    EnergyEfficiency = "A",
+                    Certifications = new List<string> { "FSC", "Low VOC" }
+                },
+                CircularEconomyOptions = new List<CircularEconomyOption>
+                {
+                    new CircularEconomyOption { Type = "repair", Description = "Refinishing service available" }
+                },
+                Tags = new List<string> { "sustainable", "wood", "furniture", "coffee table", "living room" }
+            },
+
+            // STORAGE (5 products)
+            new Product
+            {
                 Name = "Reclaimed Wood Bookshelf",
                 Description = "Beautiful 5-tier bookshelf crafted from reclaimed barn wood. Each piece is unique.",
                 Category = "storage",
@@ -118,30 +193,102 @@ public static class SampleDataSeeder
 
             new Product
             {
-                Name = "Hemp Fiber Desk",
-                Description = "Modern minimalist desk made from hemp fiber composite. Lightweight yet durable.",
-                Category = "furniture",
-                Price = 395.00m,
-                ImageUrl = "https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=400",
-                SustainabilityScore = 87,
+                Name = "Cork Storage Boxes Set",
+                Description = "Set of 3 sustainable cork storage boxes. Water-resistant and naturally antimicrobial.",
+                Category = "storage",
+                Price = 55.00m,
+                ImageUrl = "https://images.unsplash.com/photo-1600096194534-95cf5ece04cf?w=400",
+                SustainabilityScore = 93,
                 InStock = true,
                 EnvironmentalImpact = new EnvironmentalImpact
                 {
-                    CarbonFootprint = 22.0,
-                    WaterUsage = 100,
-                    RecyclablePercentage = 90,
-                    EnergyEfficiency = "A+",
-                    Certifications = new List<string> { "Hemp Certified", "Low VOC" }
+                    CarbonFootprint = 3.0,
+                    WaterUsage = 15,
+                    RecyclablePercentage = 100,
+                    EnergyEfficiency = "A",
+                    Certifications = new List<string> { "Cork Forest Certified", "Biodegradable" }
                 },
                 CircularEconomyOptions = new List<CircularEconomyOption>
                 {
-                    new CircularEconomyOption { Type = "repair", Description = "Modular design for easy repairs" },
-                    new CircularEconomyOption { Type = "recycle", Description = "Full recycling program" }
+                    new CircularEconomyOption { Type = "recycle", Description = "Fully biodegradable" }
                 },
-                Tags = new List<string> { "sustainable", "hemp", "furniture", "desk", "office" }
+                Tags = new List<string> { "sustainable", "cork", "storage", "boxes", "organization" }
             },
 
-            // LIGHTING - Energy efficient options
+            new Product
+            {
+                Name = "Recycled Plastic Storage Cabinet",
+                Description = "Durable storage cabinet made from post-consumer recycled plastic. Weather-resistant.",
+                Category = "storage",
+                Price = 180.00m,
+                ImageUrl = "https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=400",
+                SustainabilityScore = 86,
+                InStock = true,
+                EnvironmentalImpact = new EnvironmentalImpact
+                {
+                    CarbonFootprint = 12.0,
+                    WaterUsage = 45,
+                    RecyclablePercentage = 100,
+                    EnergyEfficiency = "A+",
+                    Certifications = new List<string> { "Recycled Plastic Certified" }
+                },
+                CircularEconomyOptions = new List<CircularEconomyOption>
+                {
+                    new CircularEconomyOption { Type = "repair", Description = "Modular design for repairs" },
+                    new CircularEconomyOption { Type = "recycle", Description = "Full recycling available" }
+                },
+                Tags = new List<string> { "sustainable", "recycled", "storage", "cabinet", "plastic" }
+            },
+
+            new Product
+            {
+                Name = "Cardboard Desk Organizer",
+                Description = "Modular desk organizer made from recycled cardboard. Surprisingly sturdy!",
+                Category = "storage",
+                Price = 25.00m,
+                ImageUrl = "https://images.unsplash.com/photo-1587049352846-4a222e784acc?w=400",
+                SustainabilityScore = 97,
+                InStock = true,
+                EnvironmentalImpact = new EnvironmentalImpact
+                {
+                    CarbonFootprint = 1.5,
+                    WaterUsage = 10,
+                    RecyclablePercentage = 100,
+                    EnergyEfficiency = "A+++",
+                    Certifications = new List<string> { "Recycled Paper", "FSC" }
+                },
+                CircularEconomyOptions = new List<CircularEconomyOption>
+                {
+                    new CircularEconomyOption { Type = "recycle", Description = "Fully recyclable" }
+                },
+                Tags = new List<string> { "sustainable", "recycled", "storage", "office", "budget" }
+            },
+
+            new Product
+            {
+                Name = "Cork Bulletin Board",
+                Description = "Large cork bulletin board with bamboo frame. Perfect for home office organization.",
+                Category = "storage",
+                Price = 42.00m,
+                ImageUrl = "https://images.unsplash.com/photo-1565689157206-0fddef7589a2?w=400",
+                SustainabilityScore = 94,
+                InStock = true,
+                EnvironmentalImpact = new EnvironmentalImpact
+                {
+                    CarbonFootprint = 3.0,
+                    WaterUsage = 15,
+                    RecyclablePercentage = 95,
+                    EnergyEfficiency = "A",
+                    Certifications = new List<string> { "Cork Certified", "FSC Bamboo" }
+                },
+                CircularEconomyOptions = new List<CircularEconomyOption>
+                {
+                    new CircularEconomyOption { Type = "recycle", Description = "Fully recyclable materials" }
+                },
+                Tags = new List<string> { "sustainable", "cork", "storage", "office", "organization" }
+            },
+
+            // LIGHTING (5 products)
             new Product
             {
                 Name = "Solar-Powered LED Desk Lamp",
@@ -215,57 +362,55 @@ public static class SampleDataSeeder
                 Tags = new List<string> { "sustainable", "recycled", "lighting", "pendant", "glass" }
             },
 
-            // STORAGE - Sustainable organization
             new Product
             {
-                Name = "Cork Storage Boxes Set",
-                Description = "Set of 3 sustainable cork storage boxes. Water-resistant and naturally antimicrobial.",
-                Category = "storage",
-                Price = 55.00m,
-                ImageUrl = "https://images.unsplash.com/photo-1600096194534-95cf5ece04cf?w=400",
+                Name = "LED String Lights - Solar",
+                Description = "Outdoor solar LED string lights. Perfect for patio or garden decoration.",
+                Category = "lighting",
+                Price = 38.00m,
+                ImageUrl = "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=400",
                 SustainabilityScore = 93,
                 InStock = true,
                 EnvironmentalImpact = new EnvironmentalImpact
                 {
-                    CarbonFootprint = 3.0,
-                    WaterUsage = 15,
-                    RecyclablePercentage = 100,
-                    EnergyEfficiency = "A",
-                    Certifications = new List<string> { "Cork Forest Certified", "Biodegradable" }
+                    CarbonFootprint = 3.5,
+                    WaterUsage = 12,
+                    RecyclablePercentage = 80,
+                    EnergyEfficiency = "A+++",
+                    Certifications = new List<string> { "Solar Certified", "LED Standard" }
                 },
                 CircularEconomyOptions = new List<CircularEconomyOption>
                 {
-                    new CircularEconomyOption { Type = "recycle", Description = "Fully biodegradable" }
+                    new CircularEconomyOption { Type = "recycle", Description = "LED recycling available" }
                 },
-                Tags = new List<string> { "sustainable", "cork", "storage", "boxes", "organization" }
+                Tags = new List<string> { "sustainable", "solar", "lighting", "outdoor", "LED", "budget" }
             },
 
             new Product
             {
-                Name = "Recycled Plastic Storage Cabinet",
-                Description = "Durable storage cabinet made from post-consumer recycled plastic. Weather-resistant.",
-                Category = "storage",
-                Price = 180.00m,
-                ImageUrl = "https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=400",
+                Name = "Himalayan Salt Lamp",
+                Description = "Natural Himalayan salt lamp on sustainable wood base. Creates warm ambient lighting.",
+                Category = "lighting",
+                Price = 45.00m,
+                ImageUrl = "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=400",
                 SustainabilityScore = 86,
                 InStock = true,
                 EnvironmentalImpact = new EnvironmentalImpact
                 {
-                    CarbonFootprint = 12.0,
-                    WaterUsage = 45,
-                    RecyclablePercentage = 100,
-                    EnergyEfficiency = "A+",
-                    Certifications = new List<string> { "Recycled Plastic Certified" }
+                    CarbonFootprint = 4.0,
+                    WaterUsage = 18,
+                    RecyclablePercentage = 70,
+                    EnergyEfficiency = "B",
+                    Certifications = new List<string> { "Natural Materials" }
                 },
                 CircularEconomyOptions = new List<CircularEconomyOption>
                 {
-                    new CircularEconomyOption { Type = "repair", Description = "Modular design for repairs" },
-                    new CircularEconomyOption { Type = "recycle", Description = "Full recycling available" }
+                    new CircularEconomyOption { Type = "recycle", Description = "Biodegradable components" }
                 },
-                Tags = new List<string> { "sustainable", "recycled", "storage", "cabinet", "plastic" }
+                Tags = new List<string> { "sustainable", "natural", "lighting", "ambient", "budget" }
             },
 
-            // TEXTILES - Organic and sustainable fabrics
+            // TEXTILES (4 products)
             new Product
             {
                 Name = "Organic Cotton Throw Blanket",
@@ -314,7 +459,55 @@ public static class SampleDataSeeder
                 Tags = new List<string> { "sustainable", "hemp", "textiles", "pillowcase", "bedding" }
             },
 
-            // KITCHEN - Sustainable kitchenware
+            new Product
+            {
+                Name = "Recycled Wool Rug",
+                Description = "Beautiful area rug woven from 100% recycled wool. Hand-tufted with care.",
+                Category = "textiles",
+                Price = 185.00m,
+                ImageUrl = "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400",
+                SustainabilityScore = 88,
+                InStock = true,
+                EnvironmentalImpact = new EnvironmentalImpact
+                {
+                    CarbonFootprint = 12.0,
+                    WaterUsage = 200,
+                    RecyclablePercentage = 90,
+                    EnergyEfficiency = "A",
+                    Certifications = new List<string> { "Recycled Wool", "Handmade" }
+                },
+                CircularEconomyOptions = new List<CircularEconomyOption>
+                {
+                    new CircularEconomyOption { Type = "recycle", Description = "Wool recycling program" }
+                },
+                Tags = new List<string> { "sustainable", "recycled", "textiles", "rug", "wool" }
+            },
+
+            new Product
+            {
+                Name = "Organic Bamboo Towel Set",
+                Description = "Ultra-soft towel set made from organic bamboo fiber. Naturally antibacterial.",
+                Category = "textiles",
+                Price = 58.00m,
+                ImageUrl = "https://images.unsplash.com/photo-1610557892470-55d9e80c0bce?w=400",
+                SustainabilityScore = 92,
+                InStock = true,
+                EnvironmentalImpact = new EnvironmentalImpact
+                {
+                    CarbonFootprint = 5.0,
+                    WaterUsage = 80,
+                    RecyclablePercentage = 85,
+                    EnergyEfficiency = "A+",
+                    Certifications = new List<string> { "Organic Bamboo", "OEKO-TEX" }
+                },
+                CircularEconomyOptions = new List<CircularEconomyOption>
+                {
+                    new CircularEconomyOption { Type = "recycle", Description = "Textile recycling program" }
+                },
+                Tags = new List<string> { "sustainable", "organic", "textiles", "towels", "bamboo" }
+            },
+
+            // KITCHEN (5 products)
             new Product
             {
                 Name = "Bamboo Kitchen Utensil Set",
@@ -364,7 +557,80 @@ public static class SampleDataSeeder
                 Tags = new List<string> { "sustainable", "recycled", "kitchen", "cookware", "steel" }
             },
 
-            // BEDROOM - Sustainable bedroom furniture
+            new Product
+            {
+                Name = "Glass Food Storage Containers",
+                Description = "Set of 8 borosilicate glass containers with bamboo lids. Microwave and oven safe.",
+                Category = "kitchen",
+                Price = 68.00m,
+                ImageUrl = "https://images.unsplash.com/photo-1584990347449-6f762cc05aa0?w=400",
+                SustainabilityScore = 94,
+                InStock = true,
+                EnvironmentalImpact = new EnvironmentalImpact
+                {
+                    CarbonFootprint = 8.0,
+                    WaterUsage = 45,
+                    RecyclablePercentage = 100,
+                    EnergyEfficiency = "A",
+                    Certifications = new List<string> { "Food Safe Glass", "FSC Bamboo" }
+                },
+                CircularEconomyOptions = new List<CircularEconomyOption>
+                {
+                    new CircularEconomyOption { Type = "recycle", Description = "Glass recycling program" }
+                },
+                Tags = new List<string> { "sustainable", "glass", "kitchen", "storage", "food containers" }
+            },
+
+            new Product
+            {
+                Name = "Compostable Dish Sponges - Pack of 12",
+                Description = "Eco-friendly kitchen sponges made from cellulose and coconut fiber. Fully compostable.",
+                Category = "kitchen",
+                Price = 18.00m,
+                ImageUrl = "https://images.unsplash.com/photo-1584990347449-6f762cc05aa0?w=400",
+                SustainabilityScore = 98,
+                InStock = true,
+                EnvironmentalImpact = new EnvironmentalImpact
+                {
+                    CarbonFootprint = 0.5,
+                    WaterUsage = 5,
+                    RecyclablePercentage = 100,
+                    EnergyEfficiency = "A+++",
+                    Certifications = new List<string> { "Compostable", "Biodegradable" }
+                },
+                CircularEconomyOptions = new List<CircularEconomyOption>
+                {
+                    new CircularEconomyOption { Type = "recycle", Description = "Home compostable" }
+                },
+                Tags = new List<string> { "sustainable", "compostable", "kitchen", "cleaning", "budget" }
+            },
+
+            new Product
+            {
+                Name = "Cast Iron Skillet",
+                Description = "Pre-seasoned 12-inch cast iron skillet. Built to last generations with proper care.",
+                Category = "kitchen",
+                Price = 48.00m,
+                ImageUrl = "https://images.unsplash.com/photo-1584990347449-6f762cc05aa0?w=400",
+                SustainabilityScore = 89,
+                InStock = true,
+                EnvironmentalImpact = new EnvironmentalImpact
+                {
+                    CarbonFootprint = 15.0,
+                    WaterUsage = 80,
+                    RecyclablePercentage = 100,
+                    EnergyEfficiency = "A",
+                    Certifications = new List<string> { "Iron", "Food Safe" }
+                },
+                CircularEconomyOptions = new List<CircularEconomyOption>
+                {
+                    new CircularEconomyOption { Type = "repair", Description = "Re-seasoning guide included" },
+                    new CircularEconomyOption { Type = "recycle", Description = "Fully recyclable iron" }
+                },
+                Tags = new List<string> { "sustainable", "iron", "kitchen", "cookware", "durable", "budget" }
+            },
+
+            // BEDROOM (4 products)
             new Product
             {
                 Name = "Natural Latex Mattress",
@@ -414,103 +680,201 @@ public static class SampleDataSeeder
                 Tags = new List<string> { "sustainable", "reclaimed", "bedroom", "nightstand", "wood" }
             },
 
-            // OFFICE - Budget-friendly sustainable options
             new Product
             {
-                Name = "Cardboard Desk Organizer",
-                Description = "Modular desk organizer made from recycled cardboard. Surprisingly sturdy!",
-                Category = "storage",
-                Price = 25.00m,
-                ImageUrl = "https://images.unsplash.com/photo-1587049352846-4a222e784acc?w=400",
-                SustainabilityScore = 97,
+                Name = "Organic Kapok Pillow Set",
+                Description = "Set of 2 pillows filled with organic kapok fiber. Naturally hypoallergenic and breathable.",
+                Category = "bedroom",
+                Price = 88.00m,
+                ImageUrl = "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=400",
+                SustainabilityScore = 93,
                 InStock = true,
                 EnvironmentalImpact = new EnvironmentalImpact
                 {
-                    CarbonFootprint = 1.5,
-                    WaterUsage = 10,
+                    CarbonFootprint = 6.0,
+                    WaterUsage = 50,
+                    RecyclablePercentage = 90,
+                    EnergyEfficiency = "A+",
+                    Certifications = new List<string> { "Organic Kapok", "GOTS" }
+                },
+                CircularEconomyOptions = new List<CircularEconomyOption>
+                {
+                    new CircularEconomyOption { Type = "recycle", Description = "Compostable filling" }
+                },
+                Tags = new List<string> { "sustainable", "organic", "bedroom", "pillows", "kapok" }
+            },
+
+            new Product
+            {
+                Name = "Bamboo Bed Frame",
+                Description = "Modern platform bed frame made from sustainable bamboo. Queen size, easy assembly.",
+                Category = "bedroom",
+                Price = 385.00m,
+                ImageUrl = "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=400",
+                SustainabilityScore = 89,
+                InStock = true,
+                EnvironmentalImpact = new EnvironmentalImpact
+                {
+                    CarbonFootprint = 28.0,
+                    WaterUsage = 120,
+                    RecyclablePercentage = 95,
+                    EnergyEfficiency = "A",
+                    Certifications = new List<string> { "FSC Bamboo", "Low VOC" }
+                },
+                CircularEconomyOptions = new List<CircularEconomyOption>
+                {
+                    new CircularEconomyOption { Type = "repair", Description = "Replacement parts available" },
+                    new CircularEconomyOption { Type = "recycle", Description = "Bamboo recycling program" }
+                },
+                Tags = new List<string> { "sustainable", "bamboo", "bedroom", "bed frame", "furniture" }
+            },
+
+            // BATHROOM (3 products)
+            new Product
+            {
+                Name = "Bamboo Bathroom Storage Caddy",
+                Description = "Multi-tier bathroom organizer made from water-resistant bamboo. Perfect for small spaces.",
+                Category = "bathroom",
+                Price = 52.00m,
+                ImageUrl = "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400",
+                SustainabilityScore = 91,
+                InStock = true,
+                EnvironmentalImpact = new EnvironmentalImpact
+                {
+                    CarbonFootprint = 4.5,
+                    WaterUsage = 25,
                     RecyclablePercentage = 100,
-                    EnergyEfficiency = "A+++",
-                    Certifications = new List<string> { "Recycled Paper", "FSC" }
+                    EnergyEfficiency = "A",
+                    Certifications = new List<string> { "FSC Bamboo", "Water Resistant" }
                 },
                 CircularEconomyOptions = new List<CircularEconomyOption>
                 {
                     new CircularEconomyOption { Type = "recycle", Description = "Fully recyclable" }
                 },
-                Tags = new List<string> { "sustainable", "recycled", "storage", "office", "budget" }
+                Tags = new List<string> { "sustainable", "bamboo", "bathroom", "storage", "organization" }
             },
 
             new Product
             {
-                Name = "Cork Bulletin Board",
-                Description = "Large cork bulletin board with bamboo frame. Perfect for home office organization.",
-                Category = "storage",
-                Price = 42.00m,
-                ImageUrl = "https://images.unsplash.com/photo-1565689157206-0fddef7589a2?w=400",
-                SustainabilityScore = 94,
+                Name = "Recycled Plastic Shower Caddy",
+                Description = "Rust-proof shower caddy made from 100% recycled ocean plastic. Multiple shelves.",
+                Category = "bathroom",
+                Price = 32.00m,
+                ImageUrl = "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400",
+                SustainabilityScore = 88,
                 InStock = true,
                 EnvironmentalImpact = new EnvironmentalImpact
                 {
                     CarbonFootprint = 3.0,
                     WaterUsage = 15,
-                    RecyclablePercentage = 95,
-                    EnergyEfficiency = "A",
-                    Certifications = new List<string> { "Cork Certified", "FSC Bamboo" }
+                    RecyclablePercentage = 100,
+                    EnergyEfficiency = "A+",
+                    Certifications = new List<string> { "Ocean Plastic Certified" }
                 },
                 CircularEconomyOptions = new List<CircularEconomyOption>
                 {
-                    new CircularEconomyOption { Type = "recycle", Description = "Fully recyclable materials" }
+                    new CircularEconomyOption { Type = "recycle", Description = "Plastic recycling program" }
                 },
-                Tags = new List<string> { "sustainable", "cork", "storage", "office", "organization" }
+                Tags = new List<string> { "sustainable", "recycled", "bathroom", "shower", "storage", "budget" }
             },
 
-            // More affordable options
             new Product
             {
-                Name = "Recycled Plastic Desk Chair",
-                Description = "Ergonomic desk chair made from recycled plastic bottles. Adjustable height and back support.",
-                Category = "furniture",
-                Price = 145.00m,
-                ImageUrl = "https://images.unsplash.com/photo-1592078615290-033ee584e267?w=400",
-                SustainabilityScore = 84,
+                Name = "Cork Bath Mat",
+                Description = "Natural cork bath mat. Anti-microbial, water-resistant, and naturally non-slip.",
+                Category = "bathroom",
+                Price = 38.00m,
+                ImageUrl = "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400",
+                SustainabilityScore = 95,
                 InStock = true,
                 EnvironmentalImpact = new EnvironmentalImpact
                 {
-                    CarbonFootprint = 15.0,
-                    WaterUsage = 70,
+                    CarbonFootprint = 2.5,
+                    WaterUsage = 12,
+                    RecyclablePercentage = 100,
+                    EnergyEfficiency = "A+++",
+                    Certifications = new List<string> { "Cork Certified", "Anti-Microbial" }
+                },
+                CircularEconomyOptions = new List<CircularEconomyOption>
+                {
+                    new CircularEconomyOption { Type = "recycle", Description = "Biodegradable" }
+                },
+                Tags = new List<string> { "sustainable", "cork", "bathroom", "mat", "natural", "budget" }
+            },
+
+            // OUTDOOR (3 products)
+            new Product
+            {
+                Name = "Recycled Plastic Adirondack Chair",
+                Description = "Classic Adirondack chair made from recycled plastic. Weather-resistant and maintenance-free.",
+                Category = "outdoor",
+                Price = 195.00m,
+                ImageUrl = "https://images.unsplash.com/photo-1600607687644-aac4c3eac7f4?w=400",
+                SustainabilityScore = 87,
+                InStock = true,
+                EnvironmentalImpact = new EnvironmentalImpact
+                {
+                    CarbonFootprint = 18.0,
+                    WaterUsage = 75,
                     RecyclablePercentage = 100,
                     EnergyEfficiency = "A",
                     Certifications = new List<string> { "Recycled Plastic" }
                 },
                 CircularEconomyOptions = new List<CircularEconomyOption>
                 {
-                    new CircularEconomyOption { Type = "repair", Description = "5-year warranty" },
-                    new CircularEconomyOption { Type = "recycle", Description = "Recycling program available" }
+                    new CircularEconomyOption { Type = "repair", Description = "10-year warranty" },
+                    new CircularEconomyOption { Type = "recycle", Description = "Full recycling available" }
                 },
-                Tags = new List<string> { "sustainable", "recycled", "furniture", "chair", "office", "budget" }
+                Tags = new List<string> { "sustainable", "recycled", "outdoor", "chair", "furniture" }
             },
 
             new Product
             {
-                Name = "Sustainable Wood Coffee Table",
-                Description = "Modern coffee table made from FSC-certified sustainable wood with natural finish.",
-                Category = "furniture",
-                Price = 275.00m,
-                ImageUrl = "https://images.unsplash.com/photo-1532372576444-dda954194ad0?w=400",
-                SustainabilityScore = 88,
+                Name = "Bamboo Garden Planter Set",
+                Description = "Set of 3 elevated garden planters made from sustainable bamboo. Perfect for herbs and vegetables.",
+                Category = "outdoor",
+                Price = 78.00m,
+                ImageUrl = "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=400",
+                SustainabilityScore = 92,
                 InStock = true,
                 EnvironmentalImpact = new EnvironmentalImpact
                 {
-                    CarbonFootprint = 20.0,
-                    WaterUsage = 100,
-                    RecyclablePercentage = 90,
+                    CarbonFootprint = 6.0,
+                    WaterUsage = 30,
+                    RecyclablePercentage = 100,
                     EnergyEfficiency = "A",
-                    Certifications = new List<string> { "FSC", "Low VOC" }
+                    Certifications = new List<string> { "FSC Bamboo" }
                 },
                 CircularEconomyOptions = new List<CircularEconomyOption>
                 {
-                    new CircularEconomyOption { Type = "repair", Description = "Refinishing service available" }
+                    new CircularEconomyOption { Type = "recycle", Description = "Fully biodegradable" }
                 },
-                Tags = new List<string> { "sustainable", "wood", "furniture", "coffee table", "living room" }
+                Tags = new List<string> { "sustainable", "bamboo", "outdoor", "planter", "garden" }
+            },
+
+            new Product
+            {
+                Name = "Solar Outdoor Lantern Set",
+                Description = "Set of 4 solar-powered outdoor lanterns. Automatic on/off at dusk and dawn.",
+                Category = "outdoor",
+                Price = 62.00m,
+                ImageUrl = "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400",
+                SustainabilityScore = 94,
+                InStock = true,
+                EnvironmentalImpact = new EnvironmentalImpact
+                {
+                    CarbonFootprint = 5.0,
+                    WaterUsage = 18,
+                    RecyclablePercentage = 85,
+                    EnergyEfficiency = "A+++",
+                    Certifications = new List<string> { "Solar Certified", "LED" }
+                },
+                CircularEconomyOptions = new List<CircularEconomyOption>
+                {
+                    new CircularEconomyOption { Type = "repair", Description = "Replaceable batteries" },
+                    new CircularEconomyOption { Type = "recycle", Description = "Battery recycling program" }
+                },
+                Tags = new List<string> { "sustainable", "solar", "outdoor", "lighting", "lantern" }
             }
         };
 

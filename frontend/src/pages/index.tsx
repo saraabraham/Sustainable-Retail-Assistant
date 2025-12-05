@@ -26,7 +26,6 @@ export default function Home() {
   };
 
   const handleProductSelect = (product: Product) => {
-    // Add to comparison if not already there
     if (comparisonProducts.length < 4 && !comparisonProducts.find((p) => p.id === product.id)) {
       setComparisonProducts([...comparisonProducts, product]);
     }
@@ -34,7 +33,6 @@ export default function Home() {
 
   const handleAddToCart = (product: Product) => {
     const existingItem = cartItems.find(item => item.product.id === product.id);
-
     if (existingItem) {
       setCartItems(cartItems.map(item =>
         item.product.id === product.id
@@ -44,6 +42,14 @@ export default function Home() {
     } else {
       setCartItems([...cartItems, { product, quantity: 1 }]);
     }
+  };
+
+  const handleUpdateQuantity = (productId: string, quantity: number) => {
+    setCartItems(cartItems.map(item =>
+      item.product.id === productId
+        ? { ...item, quantity }
+        : item
+    ));
   };
 
   const handleRemoveFromCart = (productId: string) => {
@@ -85,7 +91,6 @@ export default function Home() {
       </Head>
 
       <div className="min-h-screen bg-gradient-to-br from-sustainable-50 via-white to-blue-50">
-        {/* Header */}
         <header className="bg-white shadow-sm border-b border-gray-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center justify-between">
@@ -106,15 +111,14 @@ export default function Home() {
           </div>
         </header>
 
-        {/* Cart Component */}
         <Cart
           items={cartItems}
           onRemove={handleRemoveFromCart}
+          onUpdateQuantity={handleUpdateQuantity}
           onClear={handleClearCart}
           onCheckout={handleCheckout}
         />
 
-        {/* TCO Modal */}
         {selectedProductForTCO && (
           <TCOModal
             product={selectedProductForTCO}
@@ -123,9 +127,7 @@ export default function Home() {
           />
         )}
 
-        {/* Main Content */}
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Hero Section */}
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
               Find Products That Match Your Values
@@ -136,12 +138,10 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Chat Interface */}
           <div className="mb-12">
             <ChatInterface onRecommendationsReceived={handleRecommendationsReceived} />
           </div>
 
-          {/* Recommendations */}
           {recommendations.length > 0 && (
             <div className="mb-12">
               <ProductCarousel
@@ -156,7 +156,6 @@ export default function Home() {
             </div>
           )}
 
-          {/* Comparison Matrix */}
           {comparisonProducts.length > 0 && (
             <div className="mb-12">
               <ComparisonMatrix
@@ -167,7 +166,6 @@ export default function Home() {
             </div>
           )}
 
-          {/* Features Section */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
             <div className="bg-white p-6 rounded-lg shadow-md">
               <div className="w-12 h-12 bg-sustainable-100 rounded-lg flex items-center justify-center mb-4">
@@ -210,7 +208,6 @@ export default function Home() {
           </div>
         </main>
 
-        {/* Footer */}
         <footer className="bg-white border-t border-gray-200 mt-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="text-center text-gray-600">

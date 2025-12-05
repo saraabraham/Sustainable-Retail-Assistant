@@ -209,8 +209,8 @@ export default function ProductCarousel({
                 key={index}
                 onClick={() => setCurrentIndex(index * itemsPerPage)}
                 className={`w-2 h-2 rounded-full transition-all ${Math.floor(currentIndex / itemsPerPage) === index
-                    ? 'bg-sustainable-600 w-6'
-                    : 'bg-gray-300'
+                  ? 'bg-sustainable-600 w-6'
+                  : 'bg-gray-300'
                   }`}
               />
             )

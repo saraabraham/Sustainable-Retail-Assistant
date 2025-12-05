@@ -15,7 +15,17 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+// ✅ ENABLE SWAGGER IN ALL ENVIRONMENTS
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Title = "Sustainable Retail Assistant API",
+        Version = "v1",
+        Description = "AI-powered sustainable product recommendation API"
+    });
+});
 
 // MongoDB Configuration
 var mongoConnectionString = builder.Configuration["MongoDB:ConnectionString"]
@@ -58,7 +68,7 @@ builder.Services.AddScoped<IUserInteractionRepository, UserInteractionRepository
 // Health checks
 builder.Services.AddHealthChecks();
 
-// ✅ ADD CORS POLICY - Supports both local development and production
+// ✅ CORS POLICY - Supports both local development and production
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("LocalAndProductionPolicy", corsBuilder =>
@@ -66,6 +76,7 @@ builder.Services.AddCors(options =>
         corsBuilder
             .WithOrigins(
                 "http://localhost:3000",
+                "http://127.0.0.1:3000",
                 "https://localhost:3000",
                 "https://sustainable-frontend.purplesea-8944c35f.westus.azurecontainerapps.io"
             )
@@ -92,16 +103,18 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// ✅ REPLACE CUSTOM MIDDLEWARE WITH BUILT-IN CORS
+// ✅ ENABLE SWAGGER IN ALL ENVIRONMENTS
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Sustainable Retail Assistant API v1");
+    c.RoutePrefix = "swagger";
+});
+
+// ✅ CORS MUST COME BEFORE ROUTING
 app.UseCors("LocalAndProductionPolicy");
 
-// Configure the HTTP request pipeline
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
+app.UseRouting();
 app.UseAuthorization();
 app.MapControllers();
 app.MapHealthChecks("/health");
@@ -114,10 +127,11 @@ using (var scope = app.Services.CreateScope())
 }
 
 Console.WriteLine("✅ Backend is running!");
-Console.WriteLine("📍 API: http://localhost:5000");
-Console.WriteLine("📚 Swagger: http://localhost:5000/swagger");
-Console.WriteLine("🌐 CORS: Built-in policy enabled (localhost + production)");
-Console.WriteLine("🗄️  MongoDB: Connected for products");
-Console.WriteLine("🐘 PostgreSQL: Connected for user data");
+Console.WriteLine($"📍 API: http://localhost:5000");
+Console.WriteLine($"📚 Swagger: http://localhost:5000/swagger");
+Console.WriteLine($"🌐 CORS: Built-in policy enabled (localhost:3000 + 127.0.0.1:3000)");
+Console.WriteLine($"🗄️  MongoDB: {mongoConnectionString}/{mongoDatabaseName}");
+Console.WriteLine($"🐘 PostgreSQL: Connected for user data");
+Console.WriteLine($"🔍 Environment: {app.Environment.EnvironmentName}");
 
 app.Run();

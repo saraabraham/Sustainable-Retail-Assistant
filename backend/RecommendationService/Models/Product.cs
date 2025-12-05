@@ -20,10 +20,10 @@ public class Product
     public Dictionary<string, object> Specifications { get; set; } = new();
     public bool InStock { get; set; }
     public List<string> Tags { get; set; } = new();
-    
+
     [BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    
+
     [BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 }
@@ -41,10 +41,10 @@ public class CircularEconomyOption
 {
     public string Type { get; set; } = string.Empty; // repair, refurbish, recycle, buyback
     public string Description { get; set; } = string.Empty;
-    
+
     [BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
     public DateTime? AvailableUntil { get; set; }
-    
+
     public decimal? EstimatedValue { get; set; }
     public string? Provider { get; set; }
 }
@@ -103,6 +103,7 @@ public class QueryIntent
     public List<string> SustainabilityRequirements { get; set; } = new();
     public List<string> Features { get; set; } = new();
     public double Confidence { get; set; }
+    public string? ProductName { get; set; }
 }
 
 public class ApiResponse<T>

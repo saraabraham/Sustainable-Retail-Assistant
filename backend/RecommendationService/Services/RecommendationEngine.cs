@@ -9,7 +9,7 @@ public interface IRecommendationEngine
         string query,
         QueryIntent intent,
         UserPreferences? preferences);
-    
+
     Task<Recommendation?> GetSustainableAlternative(string productId);
 }
 
@@ -46,7 +46,7 @@ public class RecommendationEngine : IRecommendationEngine
                 Score = CalculateRecommendationScore(p, intent, preferences)
             })
             .OrderByDescending(x => x.Score)
-            .Take(10)
+            .Take(50)
             .ToList();
 
             // Build recommendations
@@ -121,6 +121,29 @@ public class RecommendationEngine : IRecommendationEngine
         QueryIntent intent,
         UserPreferences? preferences)
     {
+        // ✅ ADD THIS ENTIRE BLOCK AT THE TOP:
+        if (!string.IsNullOrEmpty(intent.ProductName))
+        {
+            _logger.LogInformation($"🎯 Exact product requested: {intent.ProductName}");
+
+            var allProducts = await _productRepository.SearchAsync(new ProductSearchParams
+            {
+                InStockOnly = true
+            });
+
+            var exactProduct = allProducts.FirstOrDefault(p =>
+                p.Name.Equals(intent.ProductName, StringComparison.OrdinalIgnoreCase));
+
+            if (exactProduct != null)
+            {
+                _logger.LogInformation($"✅ Returning single exact product: {exactProduct.Name}");
+                return new List<Product> { exactProduct };
+            }
+            else
+            {
+                _logger.LogWarning($"⚠️ Product '{intent.ProductName}' not found in database");
+            }
+        }
         var searchParams = new ProductSearchParams
         {
             Categories = intent.Categories,
@@ -207,7 +230,7 @@ public class RecommendationEngine : IRecommendationEngine
             });
         }
 
-        if (preferences?.BudgetRange != null && 
+        if (preferences?.BudgetRange != null &&
             product.Price <= preferences.BudgetRange.Max)
         {
             reasons.Add(new RecommendationReason
